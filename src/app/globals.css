@@ -1,0 +1,291 @@
+@import "tailwindcss";
+
+/* ============================================================
+   NIGHTBENCH — global design tokens
+   A dark room where the work is the only light source.
+   ============================================================ */
+
+@theme {
+  /* -- Surfaces: cool near-black, layered elevation -- */
+  --color-bg-0: #0a0a0e;
+  --color-bg-1: #111118;
+  --color-bg-2: #181822;
+
+  /* -- Ink: warm paper-white against cool dark = human -- */
+  --color-ink: #f4f2ed;
+  --color-ink-60: rgba(244, 242, 237, 0.6);
+  --color-ink-35: rgba(244, 242, 237, 0.35);
+
+  /* -- Hairlines: 10% ink -- */
+  --color-line: rgba(244, 242, 237, 0.1);
+
+  /* -- Signal: the workbench lamp (amber) -- */
+  --color-signal: #ffb65c;
+
+  /* -- Project hues: ambience only, never body text.
+     Derived from each product's ACTUAL visual identity (verified from the
+     live sites), tuned to the NIGHTBENCH dark stage:
+     · codeverse  — violet (system original)
+     · zenugo     — cyan #22d3ee, from the product's real --accent-secondary
+                    #06b6d4 / indigo→cyan gradient, lifted for dark-bg luminance
+     · schedura   — gold #fbbf24, from the product's real --brand-amber
+                    #f59e0b (its glow-shadow token), tuned yellower to stay
+                    distinct from the global amber signal
+     · gearpilot  — blue (system original) */
+  --color-project-codeverse: #8f7bff;
+  --color-project-zenugo: #22d3ee;
+  --color-project-schedura: #fbbf24;
+  --color-project-gearpilot: #62b6ff;
+
+  /* -- Type families (wired to next/font variables) -- */
+  --font-display: var(--font-clash), "Clash Display", var(--font-inter), system-ui, sans-serif;
+  --font-accent: var(--font-instrument), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jbmono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* -- Fluid type scale -- */
+  --text-display-l: clamp(2.25rem, 5.5vw, 4.5rem);
+  --text-display-l--line-height: 1.02;
+  --text-display-l--letter-spacing: -0.015em;
+  --text-display-m: clamp(1.75rem, 3.5vw, 3rem);
+  --text-display-m--line-height: 1.08;
+  --text-display-m--letter-spacing: -0.01em;
+
+  /* Hero statement — recalibrated: a dominant voice, not the whole voice.
+     Peaks at 6rem instead of 7.5rem and holds a wider, airier measure so
+     the first viewport composes as a page, not a single headline. */
+  --text-display-hero: clamp(2.25rem, 6.2vw, 5.5rem);
+  --text-display-hero--line-height: 1.06;
+  --text-display-hero--letter-spacing: -0.02em;
+  --text-mono-label: 0.75rem;
+  --text-mono-label--line-height: 1.4;
+  --text-mono-label--letter-spacing: 0.14em;
+
+  /* -- Spacing rhythm: the section unit -- */
+  --spacing-section: clamp(5rem, 12vh, 9rem);
+  --spacing-gutter: clamp(1.25rem, 4vw, 3rem);
+
+  /* -- Layout -- */
+  --breakpoint-nav: 48rem;
+
+  /* -- Motion -- */
+  --ease-nightbench: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ============ Base layer ============ */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
+
+body {
+  background-color: var(--color-bg-0);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-signal);
+  color: var(--color-bg-0);
+}
+
+/* Focus: the amber ring — one of the four sanctioned glow locations */
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Thin dark scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a36 transparent;
+}
+
+/* ============ Utilities ============ */
+
+/* The two-plane depth system + texture, fixed behind/above content */
+.page-frame {
+  position: relative;
+  isolation: isolate;
+}
+
+.page-frame::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(244, 242, 237, 0.045) 0%, transparent 55%),
+    radial-gradient(140% 110% at 50% 110%, rgba(10, 10, 14, 0.55) 0%, transparent 60%);
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+
+/* Content column — shared page grid */
+.shell {
+  padding-inline: var(--spacing-gutter);
+  max-width: 78rem;
+  margin-inline: auto;
+}
+
+/* Mono annotation label */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-60);
+}
+
+/* Serif-italic accent word */
+.accent-serif {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Sanctioned glow — reserved for hero keywords, media ambience, primary CTA hover, focus */
+.glow-signal {
+  text-shadow:
+    0 0 18px rgba(255, 182, 92, 0.45),
+    0 0 42px rgba(255, 182, 92, 0.18);
+}
+
+/* Ghost numeral — outlined display digits for project spreads (Phase 4) */
+.ghost-numeral {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--color-line);
+}
+
+/* ============ Hero ambience ============ */
+
+/* Localized lamp glow behind the hero statement. Pure CSS depth —
+   a slow drift keeps the room alive without canvas or particles. */
+.hero-ambience {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(55% 42% at 82% 8%, rgba(255, 182, 92, 0.12), transparent 72%),
+    radial-gradient(42% 50% at 14% 82%, rgba(143, 123, 255, 0.07), transparent 70%),
+    radial-gradient(30% 34% at 50% 110%, rgba(244, 242, 237, 0.05), transparent 70%);
+  animation: hero-drift 18s ease-in-out infinite alternate;
+}
+
+@keyframes hero-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-1.5%, -1%, 0) scale(1.06);
+  }
+}
+
+/* Hero machine — the 3D zone. The canvas handles its own hover; the
+   container never intercepts page-level drags or causes overflow. */
+.hero-machine {
+  overflow: hidden;
+  touch-action: pan-y;
+}
+.hero-machine canvas {
+  display: block;
+}
+
+/* Short viewports (clamshell laptops and small phones): compress hero
+   furniture before it ever scrolls, so the statement, machine, and CTA
+   share the first viewport. Nothing hides — only air tightens.
+   Narrow-banded so normal desktop heights are untouched. */
+@media (min-height: 40rem) and (max-height: 47rem) {
+  .hero-shell {
+    padding-top: 4.5rem;
+  }
+  .hero-statement h1 {
+    padding-top: 0.5rem;
+  }
+  .hero-machine {
+    height: 14rem;
+  }
+  .hero-identity {
+    margin-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+}
+@media (min-height: 40rem) and (max-height: 47rem) and (min-width: 64rem) {
+  .hero-machine {
+    min-height: 20rem;
+  }
+}
+
+/* ============ Case-study rooms (Phase 4) ============
+   Each case study is a different room of NIGHTBENCH: the project hue
+   exists only as environmental ambience — a localized lamp glow behind
+   the opening, never body text. Same drift signature as the hero. */
+
+.case-room-codeverse,
+.case-room-zenugo,
+.case-room-schedura,
+.case-room-gearpilot {
+  animation: hero-drift 18s ease-in-out infinite alternate;
+}
+
+/* CODEVERSE — violet / cosmic: a wide nebula field, brightest off-center */
+.case-room-codeverse {
+  background:
+    radial-gradient(60% 44% at 78% 6%, rgba(143, 123, 255, 0.16), transparent 72%),
+    radial-gradient(48% 56% at 12% 78%, rgba(143, 123, 255, 0.09), transparent 70%),
+    radial-gradient(34% 30% at 46% 46%, rgba(98, 182, 255, 0.05), transparent 70%);
+}
+
+/* ZENUGO — cyan / indigo: mirrors the product's real ambient gradient
+   (indigo primary + cyan secondary washes on deep navy) */
+.case-room-zenugo {
+  background:
+    radial-gradient(58% 44% at 72% 10%, rgba(34, 211, 238, 0.11), transparent 72%),
+    radial-gradient(44% 48% at 18% 74%, rgba(99, 102, 241, 0.07), transparent 70%);
+}
+
+/* SCHEDURA — gold: a worklight row across the top, from the product's
+   real --brand-amber glow token */
+.case-room-schedura {
+  background:
+    radial-gradient(46% 40% at 24% 4%, rgba(251, 191, 36, 0.1), transparent 70%),
+    radial-gradient(46% 40% at 76% 4%, rgba(251, 191, 36, 0.08), transparent 70%),
+    radial-gradient(50% 44% at 50% 96%, rgba(251, 191, 36, 0.04), transparent 72%);
+}
+
+/* GEARPILOT — blue / data: cool instrument-panel glow, low and even */
+.case-room-gearpilot {
+  background:
+    radial-gradient(64% 42% at 50% 0%, rgba(98, 182, 255, 0.12), transparent 74%),
+    radial-gradient(40% 44% at 86% 72%, rgba(98, 182, 255, 0.06), transparent 70%);
+}
+
+/* ============ Reduced motion ============ */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
