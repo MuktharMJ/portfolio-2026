@@ -14,7 +14,7 @@
   /* -- Ink: warm paper-white against cool dark = human -- */
   --color-ink: #f4f2ed;
   --color-ink-60: rgba(244, 242, 237, 0.6);
-  --color-ink-35: rgba(244, 242, 237, 0.35);
+  --color-ink-35: rgba(244, 242, 237, 0.52);
 
   /* -- Hairlines: 10% ink -- */
   --color-line: rgba(244, 242, 237, 0.1);
@@ -44,6 +44,9 @@
   --font-mono: var(--font-jbmono), ui-monospace, "SFMono-Regular", monospace;
 
   /* -- Fluid type scale -- */
+  --text-display-xl: clamp(2.25rem, 6.5vw, 5.5rem);
+  --text-display-xl--line-height: 1.04;
+  --text-display-xl--letter-spacing: -0.02em;
   --text-display-l: clamp(2.25rem, 5.5vw, 4.5rem);
   --text-display-l--line-height: 1.02;
   --text-display-l--letter-spacing: -0.015em;
@@ -76,6 +79,8 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  color-scheme: dark;
   scroll-padding-top: 5.5rem;
 }
 
@@ -142,13 +147,16 @@ body {
   margin-inline: auto;
 }
 
-/* Mono annotation label */
+/* Layered so explicit text colors and interaction states can override the label default. */
+@layer components {
 .mono-label {
   font-family: var(--font-mono);
   font-size: var(--text-mono-label);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-ink-60);
+}
+
 }
 
 /* Serif-italic accent word */
@@ -161,8 +169,8 @@ body {
 /* Sanctioned glow — reserved for hero keywords, media ambience, primary CTA hover, focus */
 .glow-signal {
   text-shadow:
-    0 0 18px rgba(255, 182, 92, 0.45),
-    0 0 42px rgba(255, 182, 92, 0.18);
+    0 0 2px rgba(255, 182, 92, 0.28),
+    0 0 7px rgba(255, 182, 92, 0.12);
 }
 
 /* Ghost numeral — outlined display digits for project spreads (Phase 4) */
@@ -172,6 +180,11 @@ body {
 }
 
 /* ============ Hero ambience ============ */
+
+/* Light stays close to the glyphs; other sections retain their own treatment. */
+.hero-glyph-glow {
+  text-shadow: 0 0 2px rgba(255, 182, 92, 0.28), 0 0 7px rgba(255, 182, 92, 0.12);
+}
 
 /* Localized lamp glow behind the hero statement. Pure CSS depth —
    a slow drift keeps the room alive without canvas or particles. */
@@ -184,17 +197,9 @@ body {
     radial-gradient(55% 42% at 82% 8%, rgba(255, 182, 92, 0.12), transparent 72%),
     radial-gradient(42% 50% at 14% 82%, rgba(143, 123, 255, 0.07), transparent 70%),
     radial-gradient(30% 34% at 50% 110%, rgba(244, 242, 237, 0.05), transparent 70%);
-  animation: hero-drift 18s ease-in-out infinite alternate;
+  /* Static room lighting leaves the artifact as the only continuous motion. */
 }
 
-@keyframes hero-drift {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  to {
-    transform: translate3d(-1.5%, -1%, 0) scale(1.06);
-  }
-}
 
 /* Hero machine — the 3D zone. The canvas handles its own hover; the
    container never intercepts page-level drags or causes overflow. */
@@ -240,7 +245,7 @@ body {
 .case-room-zenugo,
 .case-room-schedura,
 .case-room-gearpilot {
-  animation: hero-drift 18s ease-in-out infinite alternate;
+  /* Static room lighting leaves the artifact as the only continuous motion. */
 }
 
 /* CODEVERSE — violet / cosmic: a wide nebula field, brightest off-center */
@@ -288,4 +293,57 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Small feedback settles quickly; spatial transitions have a softer landing. */
+:root { --ease-feedback: cubic-bezier(.2, .7, .3, 1); }
+a, button { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+.ui-button { transition-timing-function: var(--ease-feedback); }
+.ui-button:active { transform: translateY(1px); }
+.nav-link { position: relative; transition: color 180ms var(--ease-feedback); }
+.nav-link::after {
+  content: ""; position: absolute; inset: auto 0 7px; height: 1px;
+  background: var(--color-signal); transform: scaleX(0); transform-origin: left;
+  transition: transform 180ms var(--ease-feedback);
+}
+.nav-link:is(:hover, :focus-visible, [aria-current]) { color: var(--color-signal); }
+.nav-link:is(:hover, :focus-visible, [aria-current])::after { transform: scaleX(1); }
+.menu-toggle { transition: opacity 180ms var(--ease-feedback); }
+.menu-toggle:active { opacity: .6; }
+.mobile-dialog {
+  position: fixed; inset: 0; margin: 0; padding: 0; border: 0;
+  width: 100%; max-width: none; height: 100dvh; max-height: none;
+  color: var(--color-ink); background: var(--color-bg-0);
+  overflow-y: auto; overscroll-behavior: contain;
+  opacity: 0; transition: opacity 300ms var(--ease-feedback), display 300ms allow-discrete, overlay 300ms allow-discrete;
+}
+.mobile-dialog[open] { display: flex; flex-direction: column; opacity: 1; }
+.mobile-dialog::backdrop { background: var(--color-bg-0); }
+@starting-style { .mobile-dialog[open] { opacity: 0; } }
+.mobile-nav-link { transition: color 180ms var(--ease-feedback); }
+.mobile-nav-link:is(:hover, :focus-visible) { color: var(--color-signal); }
+.motion-mask { overflow: clip; overflow-clip-margin: 5px; }
+.project-row:focus-visible { outline-offset: -2px; }
+.project-image { transition: transform 550ms var(--ease-nightbench); }
+.project-arrow { transition: transform 180ms var(--ease-feedback); }
+@media (hover: hover) and (pointer: fine) {
+  .project-row:hover .project-image { transform: scale(1.025); }
+  .project-row:hover .project-arrow { transform: translateX(3px); }
+}
+.project-row:focus-visible .project-arrow { transform: translateX(3px); }
+.case-image { opacity: 0; transform: scale(1.015); transition: opacity 450ms var(--ease-feedback), transform 600ms var(--ease-nightbench); }
+.case-image.is-loaded { opacity: 1; transform: none; }
+.contact-handle { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: .2em; text-decoration-thickness: 1px; transition: color 180ms var(--ease-feedback), text-decoration-color 180ms var(--ease-feedback); }
+.contact-link:is(:hover, :focus-visible) .contact-handle { color: var(--color-signal); text-decoration-color: currentColor; }
+.copy-email { transition: color 180ms var(--ease-feedback); }
+.copy-email:is(:hover, :focus-visible) { color: var(--color-signal); }
+.copy-email:active { opacity: .7; }
+@media (max-width: 47.99rem) {
+  .hero-statement, .hero-identity { transform: none !important; opacity: 1 !important; }
+  .contact-handle { overflow-wrap: anywhere; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .motion-reveal, [data-reveal] { opacity: 1 !important; transform: none !important; }
+  .project-image, .project-arrow, .case-image, .ui-button { transform: none !important; }
 }

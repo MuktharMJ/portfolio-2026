@@ -18,8 +18,8 @@ interface SectionShellProps {
  */
 export default function SectionShell({ id, index, label, children, className = "" }: SectionShellProps) {
   return (
-    <section id={id} className={`group scroll-mt-24 border-t border-line ${className}`}>
-      <div className="shell grid grid-cols-1 gap-10 py-[var(--spacing-section)] md:grid-cols-12">
+    <section id={id} tabIndex={-1} className={`scroll-mt-2 border-t border-line ${className}`}>
+      <div className="shell grid grid-cols-1 gap-7 py-[var(--spacing-section)] md:grid-cols-12">
         <div className="md:col-span-3">
           <Reveal>
             <div className="flex items-baseline gap-4 md:sticky md:top-28 md:block">
@@ -33,7 +33,7 @@ export default function SectionShell({ id, index, label, children, className = "
             </div>
           </Reveal>
         </div>
-        <div className="md:col-span-9 md:border-l md:border-line md:pl-8">{children}</div>
+        <div className="min-w-0 md:col-span-9 md:border-l md:border-line md:pl-8">{children}</div>
       </div>
     </section>
   );

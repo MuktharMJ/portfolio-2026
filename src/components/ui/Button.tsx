@@ -11,10 +11,10 @@ interface ButtonProps {
 /** CTA link. Primary = the amber workbench lamp (a sanctioned glow location). */
 export default function Button({ href, children, variant = "primary", disabled = false, external = false }: ButtonProps) {
   const base =
-    "inline-flex items-center gap-2 px-6 py-3 font-mono text-xs tracking-[0.14em] uppercase transition-all duration-200";
+    "ui-button inline-flex min-h-11 items-center justify-center gap-2 px-6 py-3 font-mono text-xs tracking-[0.14em] uppercase transition-[color,background-color,border-color,transform,box-shadow] duration-200";
   const styles =
     variant === "primary"
-      ? "bg-signal text-bg-0 hover:-translate-y-px hover:brightness-110 hover:shadow-[0_0_28px_rgba(255,182,92,0.28)]"
+      ? "bg-signal text-bg-0 hover:-translate-y-px hover:brightness-110 hover:shadow-[0_3px_18px_rgba(255,182,92,0.12)]"
       : "border border-line text-ink hover:border-signal hover:text-signal";
 
   if (disabled) {
@@ -28,7 +28,7 @@ export default function Button({ href, children, variant = "primary", disabled =
   return (
     <a
       href={href}
-      className={styles}
+      className={`${base} ${styles}`}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
       {children}

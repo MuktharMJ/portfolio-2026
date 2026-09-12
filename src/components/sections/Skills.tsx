@@ -18,7 +18,7 @@ export default function Skills() {
         </h2>
       </Reveal>
 
-      <RevealGroup className="mt-12 grid grid-cols-1 gap-x-12 md:grid-cols-2">
+      <RevealGroup className="mt-12 grid grid-cols-1 gap-x-12 gap-y-9 md:grid-cols-2">
         {skillGroups.map((group, i) => (
           <RevealItem
             key={group.id}

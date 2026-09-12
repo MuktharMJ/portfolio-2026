@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import SectionShell from "./SectionShell";
 import Reveal from "@/components/motion/Reveal";
@@ -32,9 +33,9 @@ export default function FeaturedWork() {
       </Reveal>
 
       <ul className="mt-14">
-        {projects.map((p, i) => (
+        {projects.map((p) => (
           <li key={p.slug} id={`work-${p.slug}`} className="scroll-mt-24">
-            <MaskReveal delay={i * 0.07}>
+            <MaskReveal>
               <ProjectRow project={p} hue={getHue(p.accent)} />
             </MaskReveal>
           </li>
@@ -53,7 +54,7 @@ function ProjectRow({ project, hue }: { project: Project; hue: ProjectHue }) {
     <Link
       href={`/work/${project.slug}`}
       aria-label={`${project.name} — open case study`}
-      className="group relative block border-b border-line"
+      className="project-row group relative block border-b border-line"
     >
       {/* Ambient hue wash on hover/focus */}
       <div
@@ -73,8 +74,8 @@ function ProjectRow({ project, hue }: { project: Project; hue: ProjectHue }) {
           </GhostNumeral>
         </div>
 
-        <div className="col-span-10 md:col-span-7">
-          <h3 className="font-display text-display-m font-medium text-ink md:text-display-l">
+        <div className="col-span-10 md:col-span-6">
+          <h3 className="font-display text-display-m font-medium text-ink">
             {project.name}
           </h3>
           <p className="mt-3 hidden max-w-lg leading-relaxed text-ink-60 md:block">{project.concept}</p>
@@ -88,30 +89,14 @@ function ProjectRow({ project, hue }: { project: Project; hue: ProjectHue }) {
           </p>
         </div>
 
-        {/* Atmosphere panel — designed cover slot in the project hue (md+) */}
-        <div className="hidden md:col-span-4 md:block">
-          <div
-            className={`relative h-44 overflow-hidden border border-line transition-[transform,border-color] duration-500 group-hover:scale-[1.02] ${hue.borderHover}`}
-          >
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 opacity-60 transition-opacity duration-500 group-hover:opacity-100 group-focus-within:opacity-100"
-              style={{ background: `radial-gradient(100% 130% at 85% 0%, ${hue.glow}1f 0%, transparent 62%)` }}
-            />
-            <span
-              aria-hidden="true"
-              className="ghost-numeral absolute right-3 top-1 select-none font-display text-7xl font-semibold leading-none"
-              style={{ WebkitTextStroke: `1px ${hue.glow}40` }}
-            >
-              {project.index}
-            </span>
-            <div className="absolute inset-x-0 bottom-0 p-4">
-              <p className="mono-label">{project.tagline}</p>
-              <p className="mono-label mt-1 text-ink-35 transition-colors duration-300 group-hover:text-ink group-focus-within:text-ink">
-                OPEN CASE STUDY <span aria-hidden="true">&rarr;</span>
-              </p>
-            </div>
+        {/* Existing screenshots anchor each row on both touch and desktop. */}
+        <div className="col-span-12 min-w-0 md:col-span-5">
+          <div className="relative aspect-video overflow-hidden bg-bg-1">
+            {project.media[0] && <Image src={project.media[0].src} alt={project.media[0].alt} fill sizes="(max-width: 767px) 90vw, (max-width: 1280px) 30vw, 340px" className="project-image object-cover" />}
           </div>
+          <p className="mono-label mt-3 hidden items-center justify-between md:flex">
+            OPEN CASE STUDY <span aria-hidden="true" className="project-arrow">&rarr;</span>
+          </p>
         </div>
       </div>
 

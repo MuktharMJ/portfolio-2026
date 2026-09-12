@@ -25,7 +25,7 @@ export default function CaseShowcase({ project, hue }: { project: Project; hue: 
             <Reveal
               key={item.src}
               delay={i * 0.06}
-              className={i % 3 === 0 ? "md:col-span-7" : "md:col-span-5"}
+              className={project.media.length === 1 ? "md:col-span-12" : i % 3 === 0 ? "md:col-span-7" : "md:col-span-5"}
             >
               <MediaReveal src={item.src} alt={item.alt} hue={hue} width={item.width} height={item.height} />
             </Reveal>

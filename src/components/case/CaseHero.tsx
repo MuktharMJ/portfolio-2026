@@ -1,6 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
+
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { DURATION, EASE } from "@/lib/motion-tokens";
 import type { Project } from "@/content/types";
@@ -18,10 +20,10 @@ function Line({
   return (
     <span className="block overflow-hidden">
       <motion.span
-        className="block"
+        className="motion-reveal block"
         initial={{ opacity: 0, y: "110%" }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: reduced ? 0.01 : DURATION.large, ease: EASE, delay }}
+        transition={{ duration: reduced ? 0.01 : DURATION.large, ease: EASE, delay: reduced ? 0 : delay }}
       >
         {children}
       </motion.span>
@@ -44,7 +46,7 @@ export default function CaseHero({ project, hue }: { project: Project; hue: Proj
   const fade = (delay: number) => ({
     initial: { opacity: 0, y: 18 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: reduced ? 0.01 : DURATION.medium, ease: EASE, delay },
+    transition: { duration: reduced ? 0.01 : DURATION.medium, ease: EASE, delay: reduced ? 0 : delay },
   });
 
   return (
@@ -68,7 +70,7 @@ export default function CaseHero({ project, hue }: { project: Project; hue: Proj
         <motion.nav
           aria-label="Breadcrumb"
           {...fade(base)}
-          className="flex items-center gap-3"
+          className="motion-reveal flex items-center gap-3"
         >
           <Link
             href="/#work"
@@ -83,7 +85,7 @@ export default function CaseHero({ project, hue }: { project: Project; hue: Proj
         </motion.nav>
 
         {/* Index + status annotations */}
-        <motion.div {...fade(base + step)} className="mt-14 flex items-baseline justify-between gap-4">
+        <motion.div {...fade(base + step)} className="motion-reveal mt-14 flex items-baseline justify-between gap-4">
           <p className="mono-label" style={{ color: glow }}>
             PROJECT {project.index}
           </p>
@@ -128,7 +130,7 @@ export default function CaseHero({ project, hue }: { project: Project; hue: Proj
                 href={project.links.live}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mono-label inline-flex min-h-11 items-center bg-signal px-6 text-bg-0 transition-all hover:-translate-y-px hover:brightness-110"
+                className="ui-button inline-flex min-h-11 items-center bg-signal px-6 font-mono text-xs tracking-widest text-bg-0 transition-[transform,filter] duration-200 hover:-translate-y-px hover:brightness-110"
               >
                 LIVE EXPERIENCE &nearr;
               </a>

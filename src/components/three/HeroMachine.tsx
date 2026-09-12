@@ -1,273 +1,138 @@
-"use client";
+﻿"use client";
 
-/**
- * NIGHTBENCH hero machine — the signature 3D piece.
- *
- * Concept: a dark engineered core (flat-shaded icosahedron with an amber
- * wireframe skin) around which a system of instruments rotates — two
- * gyroscope rings, two sweeping energy arcs, a handful of low-poly
- * satellites riding inclined orbits (amber primary; the NIGHTBENCH project
- * hues appear only as tiny secondary signals), and a sparse "data shell"
- * of points giving depth and atmosphere.
- *
- * Performance contract:
- *  · client-only, loaded via next/dynamic — never in the initial bundle
- *  · module-scope shared geometries, ~a dozen low-poly meshes total
- *  · no textures, no shadows, no post-processing, 3 lights
- *  · per-frame work is O(satellites) trig + eased lerps
- *  · prefers-reduced-motion: frameloop switches to "demand" — a static,
- *    still-composed machine renders and the RAF loop is parked
- */
-
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 const AMBER = "#ffb65c";
-const INK = "#f4f2ed";
-// Scene-wide footprint — the single knob for how much of the right hero zone
-// the machine fills. Applied to the root group (initial + animation target).
-const MACHINE_SCALE = 1.6;
-// Project hues as environmental whispers — satellite-sized only, never dominant.
-const WHISPER = ["#8f7bff", "#22d3ee", "#fbbf24", "#62b6ff"];
-
-/* Shared low-poly geometries — created once, reused every render. */
-const CORE_GEO = new THREE.IcosahedronGeometry(0.8, 1);
-const CORE_WIRE_GEO = new THREE.IcosahedronGeometry(0.815, 1);
-const PULSE_GEO = new THREE.IcosahedronGeometry(0.35, 0);
-const SAT_GEOS = [
-  new THREE.OctahedronGeometry(1, 0),
-  new THREE.BoxGeometry(1.25, 1.25, 1.25),
-  new THREE.TetrahedronGeometry(1.15, 0),
+const RINGS: { radius: number; tilt: [number, number, number]; speed: number; color: string }[] = [
+  { radius: 1.62, tilt: [0.65, -0.38, -0.5], speed: 0.045, color: AMBER },
+  { radius: 2.02, tilt: [1.05, 0.48, 0.48], speed: -0.032, color: "#78b8da" },
+  { radius: 2.38, tilt: [-0.55, 0.64, -0.38], speed: 0.023, color: AMBER },
+  { radius: 2.62, tilt: [0.9, -0.65, 0.65], speed: -0.018, color: "#a497d2" },
 ];
 
-interface SatelliteDef {
-  r: number;
-  speed: number;
-  phase: number;
-  tilt: [number, number, number];
-  color: string;
-  intensity: number;
-  geo: number;
-  scale: number;
+/** Local studio reflections: no network assets or postprocessing. */
+function Studio() {
+  const { gl, scene, invalidate } = useThree();
+  useEffect(() => {
+    const room = new RoomEnvironment();
+    const generator = new THREE.PMREMGenerator(gl);
+    const target = generator.fromScene(room, 0.035);
+    const previous = scene.environment;
+    scene.environment = target.texture;
+    invalidate();
+    room.dispose();
+    generator.dispose();
+    return () => { scene.environment = previous; target.dispose(); };
+  }, [gl, scene, invalidate]);
+  return null;
 }
 
-function makeSatellites(lite: boolean): SatelliteDef[] {
-  const full: SatelliteDef[] = [
-    { r: 1.55, speed: 0.42, phase: 0.4, tilt: [0.42, 0, 0.18], color: AMBER, intensity: 1.3, geo: 0, scale: 0.1 },
-    { r: 1.85, speed: -0.3, phase: 2.4, tilt: [-0.5, 0, -0.24], color: WHISPER[0], intensity: 0.5, geo: 1, scale: 0.08 },
-    { r: 2.1, speed: 0.24, phase: 4.4, tilt: [0.24, 0, 0.4], color: WHISPER[1], intensity: 0.45, geo: 2, scale: 0.08 },
-    { r: 1.7, speed: -0.5, phase: 5.6, tilt: [-0.18, 0, -0.42], color: WHISPER[2], intensity: 0.45, geo: 0, scale: 0.07 },
-    { r: 2.35, speed: 0.2, phase: 1.6, tilt: [0.62, 0, 0.1], color: WHISPER[3], intensity: 0.4, geo: 1, scale: 0.07 },
-    { r: 2.5, speed: -0.16, phase: 3.4, tilt: [-0.34, 0, 0.3], color: AMBER, intensity: 0.9, geo: 2, scale: 0.09 },
-  ];
-  return lite ? full.slice(0, 3) : full;
-}
-
-/** One inclined orbit + one small shape, integrated per frame (cheap). */
-function Orbiter({
-  sat,
-  reduced,
-  speedRef,
-}: {
-  sat: SatelliteDef;
-  reduced: boolean;
-  speedRef: { current: number };
-}) {
-  const mesh = useRef<THREE.Mesh>(null);
-  const angle = useRef(sat.phase);
-
+function Gimbal({ index, lite, reduced }: { index: number; lite: boolean; reduced: boolean }) {
+  const moving = useRef<THREE.Group>(null);
+  const ring = RINGS[index];
   useFrame((_, delta) => {
-    if (reduced) return; // static composition
-    const m = mesh.current;
-    if (!m) return;
-    const d = Math.min(delta, 0.05);
-    angle.current += d * sat.speed * speedRef.current;
-    m.position.set(Math.cos(angle.current) * sat.r, 0, Math.sin(angle.current) * sat.r);
-    m.rotation.x += d * 0.7;
-    m.rotation.y += d * 0.45;
+    if (!reduced && moving.current) moving.current.rotation.z += Math.min(delta, 0.05) * ring.speed;
   });
-
   return (
-    <group rotation={sat.tilt}>
-      <mesh
-        ref={mesh}
-        geometry={SAT_GEOS[sat.geo]}
-        scale={sat.scale}
-        position={[Math.cos(sat.phase) * sat.r, 0, Math.sin(sat.phase) * sat.r]}
-      >
-        <meshStandardMaterial
-          color={sat.color}
-          emissive={sat.color}
-          emissiveIntensity={sat.intensity}
-          roughness={0.35}
-          metalness={0.2}
-        />
-      </mesh>
+    <group rotation={ring.tilt}>
+      <group ref={moving} rotation={[0, 0, index * 1.4]}>
+        <mesh>
+          <torusGeometry args={[ring.radius, index === 0 ? 0.055 : 0.032, lite ? 8 : 12, lite ? 80 : 144]} />
+          <meshPhysicalMaterial color={index % 2 ? "#777a82" : "#8a7965"} metalness={0.95} roughness={0.22} clearcoat={0.65} envMapIntensity={1.3} />
+        </mesh>
+        <mesh rotation={[0, 0, 0.35]}>
+          <torusGeometry args={[ring.radius + 0.006, 0.009, 6, lite ? 40 : 72, Math.PI * 0.64]} />
+          <meshStandardMaterial color={ring.color} emissive={ring.color} emissiveIntensity={0.65} metalness={0.5} roughness={0.3} />
+        </mesh>
+        {index < 3 && (
+          <group position={[ring.radius, 0, 0]} rotation={[0, 0, Math.PI / 4]}>
+            <mesh>
+              <boxGeometry args={[0.13, 0.22, 0.13]} />
+              <meshPhysicalMaterial color="#757782" metalness={0.9} roughness={0.2} clearcoat={1} />
+            </mesh>
+            <mesh position={[0, 0, 0.071]}>
+              <boxGeometry args={[0.035, 0.13, 0.012]} />
+              <meshStandardMaterial color={AMBER} emissive={AMBER} emissiveIntensity={0.8} />
+            </mesh>
+          </group>
+        )}
+      </group>
     </group>
   );
 }
 
-/** Even point shell (golden-angle distribution, deterministic — no hydration drift). */
-function useShellPoints(count: number) {
-  return useMemo(() => {
-    const arr = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const y = 1 - (i / (count - 1)) * 2;
-      const rad = Math.sqrt(Math.max(0, 1 - y * y));
-      const theta = i * 2.399963; // golden angle
-      const r = 2.12 + Math.sin(i * 12.9898) * 0.23;
-      arr[i * 3] = Math.cos(theta) * rad * r;
-      arr[i * 3 + 1] = y * r;
-      arr[i * 3 + 2] = Math.sin(theta) * rad * r;
-    }
-    return arr;
-  }, [count]);
-}
-
-function Machine({ reduced, lite }: { reduced: boolean; lite: boolean }) {
+function Artifact({ lite, reduced }: { lite: boolean; reduced: boolean }) {
   const root = useRef<THREE.Group>(null);
-  const ringA = useRef<THREE.Mesh>(null);
-  const ringB = useRef<THREE.Mesh>(null);
-  const arcA = useRef<THREE.Mesh>(null);
-  const arcB = useRef<THREE.Mesh>(null);
-  const shellPts = useRef<THREE.Points>(null);
-  const pulse = useRef<THREE.Mesh>(null);
-  const coreGlow = useRef<THREE.PointLight>(null);
-  const speedRef = useRef(1);
-  const hovering = useRef(false);
-  const tiltX = useRef(0);
-  const tiltZ = useRef(0);
-
-  const satellites = useMemo(() => makeSatellites(lite), [lite]);
-  const shellPositions = useShellPoints(lite ? 80 : 160);
-
-  useFrame((state, delta) => {
-    if (reduced) return; // static, composed pose — no per-frame work
-    const d = Math.min(delta, 0.05);
-    const t = state.clock.elapsedTime;
-    const g = root.current;
-    if (!g) return;
-
-    // Hover: the machine leans in — eased speed-up + scale.
-    const targetSpeed = hovering.current ? 1.85 : 1;
-    speedRef.current += (targetSpeed - speedRef.current) * (1 - Math.exp(-5 * d));
-
-    // Pointer parallax: eased tilt toward the cursor.
-    const k = 1 - Math.exp(-2.6 * d);
-    tiltX.current += (state.pointer.y * 0.16 - tiltX.current) * k;
-    tiltZ.current += (state.pointer.x * -0.12 - tiltZ.current) * k;
-    g.rotation.x = 0.06 + tiltX.current;
-    g.rotation.z = tiltZ.current;
-    g.rotation.y += d * 0.12 * speedRef.current;
-
-    const targetScale = hovering.current ? MACHINE_SCALE * 1.035 : MACHINE_SCALE;
-    g.scale.setScalar(g.scale.x + (targetScale - g.scale.x) * (1 - Math.exp(-6 * d)));
-
-    // Instruments: rings precess slowly, energy arcs sweep visibly.
-    if (ringA.current) {
-      ringA.current.rotation.x += d * 0.045 * speedRef.current;
-      ringA.current.rotation.y += d * 0.03;
-    }
-    if (ringB.current) ringB.current.rotation.y -= d * 0.04 * speedRef.current;
-    if (arcA.current) arcA.current.rotation.z += d * 0.12 * speedRef.current;
-    if (arcB.current) arcB.current.rotation.z -= d * 0.08 * speedRef.current;
-    if (shellPts.current) shellPts.current.rotation.y -= d * 0.02;
-
-    // The core breathes; its lamp follows.
-    const breathe = 0.82 + Math.sin(t * 1.35) * 0.18 + (hovering.current ? 0.3 : 0);
-    if (pulse.current) {
-      const m = pulse.current.material as THREE.MeshBasicMaterial;
-      m.opacity = 0.55 + breathe * 0.3;
-      pulse.current.scale.setScalar(0.92 + breathe * 0.16);
-    }
-    if (coreGlow.current) coreGlow.current.intensity = 22 + breathe * 10;
+  const { size } = useThree();
+  // Fit the full silhouette to the unchanged slot, including short mobile slots.
+  const scale = Math.min(1, size.width / size.height) * 1.02;
+  const profile = useMemo(() => [
+    [0, -0.55], [0.72, -0.55], [0.91, -0.48], [1.04, -0.31],
+    [1.08, -0.18], [1.08, 0.18], [1.02, 0.32], [0.86, 0.43], [0, 0.43],
+  ].map(([x, y]) => new THREE.Vector2(x, y)), []);
+  useFrame(({ pointer }, delta) => {
+    const group = root.current;
+    if (!group || reduced) return;
+    const smoothing = 1 - Math.exp(-2 * Math.min(delta, 0.05));
+    group.rotation.x = THREE.MathUtils.lerp(group.rotation.x, 0.12 + pointer.y * 0.07, smoothing);
+    group.rotation.y = THREE.MathUtils.lerp(group.rotation.y, -0.3 + pointer.x * 0.1, smoothing);
   });
-
+  useEffect(() => {
+    if (reduced && root.current) root.current.rotation.set(0.12, -0.3, -0.12);
+  }, [reduced]);
   return (
-    <group ref={root} rotation={[0.08, -0.35, 0]} scale={MACHINE_SCALE}>
-      {/* Invisible hit volume — hover/tactile response for the whole machine */}
-      <mesh
-        onPointerOver={() => {
-          hovering.current = true;
-        }}
-        onPointerOut={() => {
-          hovering.current = false;
-        }}
-      >
-        <sphereGeometry args={[2.9, 16, 16]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-      </mesh>
-
-      {/* Core — dark faceted housing, amber wireframe skin, breathing lamp */}
-      <mesh geometry={CORE_GEO}>
-        <meshStandardMaterial
-          color="#14141c"
-          roughness={0.32}
-          metalness={0.78}
-          emissive={AMBER}
-          emissiveIntensity={0.07}
-          flatShading
-        />
-      </mesh>
-      <mesh geometry={CORE_WIRE_GEO}>
-        <meshBasicMaterial color={AMBER} wireframe transparent opacity={0.13} />
-      </mesh>
-      <mesh ref={pulse} geometry={PULSE_GEO}>
-        <meshBasicMaterial color={AMBER} transparent opacity={0.8} />
-      </mesh>
-      <pointLight ref={coreGlow} color={AMBER} intensity={26} distance={8} decay={2} />
-
-      {/* Gyroscope rings — hairline instruments at fixed, distinct tilts */}
-      <mesh ref={ringA} rotation={[Math.PI / 2.4, 0.3, 0]}>
-        <torusGeometry args={[1.5, 0.011, 8, 96]} />
-        <meshBasicMaterial color={INK} transparent opacity={0.16} />
-      </mesh>
-      <mesh ref={ringB} rotation={[Math.PI / 1.9, -0.5, 0.4]}>
-        <torusGeometry args={[1.85, 0.009, 8, 96]} />
-        <meshBasicMaterial color={AMBER} transparent opacity={0.3} />
-      </mesh>
-
-      {/* Energy arcs — partial rings whose gap sweeps around the core */}
-      <mesh ref={arcA} rotation={[Math.PI / 2.1, 0.9, 0.2]}>
-        <torusGeometry args={[1.68, 0.006, 6, 80, Math.PI * 1.15]} />
-        <meshBasicMaterial color={AMBER} transparent opacity={0.5} />
-      </mesh>
-      <mesh ref={arcB} rotation={[Math.PI / 1.75, -0.9, -0.3]}>
-        <torusGeometry args={[2.0, 0.005, 6, 80, Math.PI * 0.8]} />
-        <meshBasicMaterial color={INK} transparent opacity={0.2} />
-      </mesh>
-
-      {/* Data shell — sparse points for depth and atmosphere */}
-      <points ref={shellPts}>
-        <bufferGeometry>
-          <bufferAttribute attach="attributes-position" args={[shellPositions, 3]} />
-        </bufferGeometry>
-        <pointsMaterial
-          color={AMBER}
-          size={0.02}
-          sizeAttenuation
-          transparent
-          opacity={0.32}
-          depthWrite={false}
-        />
-      </points>
-
-      {/* Satellites — amber first, project hues as whispers */}
-      {satellites.map((sat, i) => (
-        <Orbiter key={i} sat={sat} reduced={reduced} speedRef={speedRef} />
-      ))}
+    <group ref={root} scale={scale} rotation={[0.12, -0.3, -0.12]}>
+      {/* Beveled housing with a recessed coated optical face, not a spherical core. */}
+      <group rotation={[-Math.PI / 2 + 0.2, 0, -0.18]}>
+        <mesh>
+          <latheGeometry args={[profile, lite ? 48 : 96]} />
+          <meshPhysicalMaterial color="#292c36" metalness={0.88} roughness={0.2} clearcoat={1} clearcoatRoughness={0.12} envMapIntensity={1.7} />
+        </mesh>
+        {[-0.34, 0.18].map((y) => (
+          <mesh key={y} position={[0, y, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[1.065, 0.018, 8, lite ? 64 : 112]} />
+            <meshStandardMaterial color={AMBER} emissive={AMBER} emissiveIntensity={0.32} metalness={0.8} roughness={0.25} />
+          </mesh>
+        ))}
+        <mesh position={[0, -0.565, 0]}>
+          <cylinderGeometry args={[0.71, 0.71, 0.035, lite ? 48 : 96]} />
+          <meshPhysicalMaterial color="#080d18" metalness={0.45} roughness={0.08} clearcoat={1} clearcoatRoughness={0.04} envMapIntensity={2} />
+        </mesh>
+        <mesh position={[0, -0.59, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.73, 0.035, 10, lite ? 64 : 112]} />
+          <meshPhysicalMaterial color="#9a8a78" metalness={1} roughness={0.19} clearcoat={0.6} />
+        </mesh>
+        <mesh position={[0, -0.595, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.46, 0.006, 6, 64, Math.PI * 1.35]} />
+          <meshStandardMaterial color={AMBER} emissive={AMBER} emissiveIntensity={0.4} metalness={0.6} roughness={0.3} />
+        </mesh>
+      </group>
+      {RINGS.slice(0, lite ? 3 : 4).map((_, index) => <Gimbal key={index} index={index} lite={lite} reduced={reduced} />)}
     </group>
   );
 }
 
-/**
- * Canvas wrapper. `lite` halves the element count and caps DPR on narrow
- * viewports; `reduced` parks the RAF loop entirely (static machine).
- */
-export default function HeroMachine({ reduced = false }: { reduced?: boolean }) {
-  const [lite, setLite] = useState(false);
+/** Renderer failures remain isolated to this decorative slot. */
+class RendererBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() { return this.state.failed ? null : this.props.children; }
+}
 
+export default function HeroMachine({ reduced = false }: { reduced?: boolean }) {
+  const container = useRef<HTMLDivElement>(null);
+  const [lite, setLite] = useState(true);
+  const [visible, setVisible] = useState(true);
+  const [pageVisible, setPageVisible] = useState(true);
+  useEffect(() => {
+    const update = () => setPageVisible(!document.hidden);
+    update();
+    document.addEventListener("visibilitychange", update);
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 48rem)");
     const update = () => setLite(mq.matches);
@@ -275,19 +140,35 @@ export default function HeroMachine({ reduced = false }: { reduced?: boolean }) 
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
-
+  useEffect(() => {
+    const node = container.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting));
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
   return (
-    <Canvas
-      dpr={lite ? [1, 1.25] : [1, 1.75]}
-      camera={{ fov: 40, position: [0, 0.4, 10.6], near: 0.1, far: 40 }}
-      gl={{ antialias: true, alpha: true }}
-      frameloop={reduced ? "demand" : "always"}
-      style={{ background: "transparent" }}
-    >
-      <ambientLight intensity={0.22} />
-      <directionalLight position={[5, 7, 4]} intensity={1.15} color="#e8ecff" />
-      <directionalLight position={[-6, -3, -4]} intensity={0.3} color="#8f7bff" />
-      <Machine reduced={reduced} lite={lite} />
-    </Canvas>
+    <div ref={container} className="h-full w-full">
+      <RendererBoundary>
+        <Canvas
+          fallback={<span />}
+          dpr={lite ? [1, 1.25] : [1, 1.75]}
+          camera={{ fov: 38, position: [0, 0, 8.5], near: 0.1, far: 40 }}
+          gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
+          frameloop={reduced || !visible || !pageVisible ? "demand" : "always"}
+          style={{ background: "transparent", pointerEvents: lite || reduced ? "none" : "auto" }}
+        >
+          <Studio />
+          <ambientLight intensity={0.2} />
+          <directionalLight position={[3, 5, 5]} intensity={3} color="#f5e8d8" />
+          <directionalLight position={[-4, 1, 2]} intensity={1.2} color="#8f7bff" />
+          <pointLight position={[2, -2, 3]} intensity={12} color={AMBER} />
+          <pointLight position={[-2, -1, -2]} intensity={6} color="#69c5c0" />
+          {!lite && <pointLight position={[3, 2, -2]} intensity={5} color="#da8d83" />}
+          <directionalLight position={[1, -3, -3]} intensity={0.6} color="#62b6ff" />
+          <Artifact lite={lite} reduced={reduced} />
+        </Canvas>
+      </RendererBoundary>
+    </div>
   );
 }

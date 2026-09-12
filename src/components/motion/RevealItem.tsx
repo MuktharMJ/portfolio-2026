@@ -1,6 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
+
+import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { DURATION, EASE, revealItem } from "@/lib/motion-tokens";
 
@@ -30,7 +32,7 @@ export default function RevealItem({ children, className, as = "div" }: RevealIt
     },
   };
   return (
-    <Tag variants={variants} className={className}>
+    <Tag variants={variants} className={`motion-reveal ${className ?? ""}`}>
       {children}
     </Tag>
   );

@@ -44,7 +44,7 @@ export default function CaseConcept({
       <section className="shell border-t border-line py-[var(--spacing-section)]">
         {numeral}
         <Reveal className="mt-6">{heading}</Reveal>
-        <RevealGroup as="ol" className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <RevealGroup as="ol" className="mt-12 grid grid-cols-1 gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
           {section.capabilities.map((capability, i) => (
             <RevealItem
               key={capability}

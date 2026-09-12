@@ -12,7 +12,7 @@ export const DURATION = {
   large: 0.85,
 } as const;
 
-export const STAGGER = 0.08;
+export const STAGGER = 0.045;
 
 export const springSoft: Transition = { type: "spring", stiffness: 220, damping: 26 };
 
@@ -20,13 +20,13 @@ export const springSoft: Transition = { type: "spring", stiffness: 220, damping:
 export const staggerContainer: Variants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: STAGGER, delayChildren: 0.1 },
+    transition: { staggerChildren: STAGGER, delayChildren: 0.03 },
   },
 };
 
 /** Child: masked lift-and-reveal. Degrades to opacity-only under reduced motion. */
 export const revealItem: Variants = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 14 },
   visible: {
     opacity: 1,
     y: 0,

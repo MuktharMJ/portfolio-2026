@@ -14,17 +14,17 @@ export default function ResumeSection() {
       </Reveal>
       <Reveal delay={0.08}>
         <dl className="mt-10 max-w-xl border-t border-line">
-          <div className="flex items-baseline justify-between gap-6 border-b border-line py-5">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[8rem_1fr] sm:gap-6 border-b border-line py-5">
             <dt className="mono-label">EDUCATION</dt>
-            <dd className="text-right font-medium text-ink">{resume.education}</dd>
+            <dd className="sm:text-right font-medium text-ink">{resume.education}</dd>
           </div>
-          <div className="flex items-baseline justify-between gap-6 border-b border-line py-5">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[8rem_1fr] sm:gap-6 border-b border-line py-5">
             <dt className="mono-label">INSTITUTION</dt>
-            <dd className="text-right text-ink-60">{resume.institution}</dd>
+            <dd className="sm:text-right text-ink-60">{resume.institution}</dd>
           </div>
-          <div className="flex items-baseline justify-between gap-6 border-b border-line py-5">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-[8rem_1fr] sm:gap-6 border-b border-line py-5">
             <dt className="mono-label">PERIOD</dt>
-            <dd className="text-right text-ink-60">{resume.period}</dd>
+            <dd className="sm:text-right text-ink-60">{resume.period}</dd>
           </div>
         </dl>
       </Reveal>

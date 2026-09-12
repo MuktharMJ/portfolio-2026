@@ -1,8 +1,10 @@
 "use client";
 
+import { useReducedMotion } from "@/lib/use-reduced-motion";
+
 import dynamic from "next/dynamic";
 import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { profile } from "@/content/profile";
 import { DURATION, EASE } from "@/lib/motion-tokens";
 import Button from "@/components/ui/Button";
@@ -25,7 +27,7 @@ function Line({ children, delay, reduced }: { children: React.ReactNode; delay: 
   return (
     <span className="block overflow-hidden">
       <motion.span
-        className="block"
+        className="motion-reveal block"
         /* Hydration-safe: initial state is identical on server and client;
            reduced motion collapses the transition to ~0 duration instead
            of branching the rendered DOM. */
@@ -46,7 +48,7 @@ function FadeUp({ children, delay, reduced, className }: { children: React.React
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reduced ? 0.01 : DURATION.medium, ease: EASE, delay: reduced ? 0 : delay }}
-      className={className}
+      className={`motion-reveal ${className ?? ""}`}
     >
       {children}
     </motion.div>
@@ -66,9 +68,9 @@ export default function Hero() {
     target: sectionRef,
     offset: ["start start", "end start"],
   });
-  const statementY = useTransform(scrollYProgress, [0, 1], [0, reduced ? 0 : 130]);
-  const statementOpacity = useTransform(scrollYProgress, [0, 0.7], [1, reduced ? 1 : 0]);
-  const identityY = useTransform(scrollYProgress, [0, 1], [0, reduced ? 0 : 70]);
+  const statementY = useTransform(scrollYProgress, [0, 1], [0, reduced ? 0 : 28]);
+  const statementOpacity = useTransform(scrollYProgress, [0, 1], [1, reduced ? 1 : 0.75]);
+  const identityY = useTransform(scrollYProgress, [0, 1], [0, reduced ? 0 : 12]);
 
   return (
     <section
@@ -100,13 +102,13 @@ export default function Hero() {
               so the first viewport reads as a composed page. */}
           <motion.div
             style={{ y: statementY, opacity: statementOpacity }}
-            className="hero-statement lg:col-start-1 lg:col-span-7 lg:row-start-1 lg:self-center"
+            className="motion-reveal hero-statement lg:col-start-1 lg:col-span-7 lg:row-start-1 lg:self-center"
           >
             <h1 className="pt-6 font-display text-display-hero font-medium text-ink lg:pt-0">
               <Line delay={base} reduced={reduced}>{profile.heroLines[0]}</Line>
               <Line delay={base + step} reduced={reduced}>{profile.heroLines[1]}</Line>
               <Line delay={base + step * 2} reduced={reduced}>
-                <span className="accent-serif glow-signal text-signal">{profile.heroAccent}</span>
+                <span className="accent-serif hero-glyph-glow text-signal">{profile.heroAccent}</span>
                 {` ${profile.heroAccentTail}`}
               </Line>
             </h1>
@@ -140,13 +142,12 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: reduced ? 0.01 : DURATION.medium, ease: EASE, delay: reduced ? 0 : 1 }}
-          className="hero-identity mt-8 border-t border-line pt-5 pb-8 md:mt-10 md:pt-6 md:pb-10"
+          className="motion-reveal hero-identity mt-8 border-t border-line pt-5 pb-8 md:mt-10 md:pt-6 md:pb-10"
         >
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <p className="mono-label">{profile.studioLine}</p>
             <p className="mono-label flex items-center gap-2.5">
               <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-60" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-signal" />
               </span>
               {profile.availability}

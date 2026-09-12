@@ -17,9 +17,9 @@ export default function Philosophy() {
       </Reveal>
       <RevealGroup className="mt-12 grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 md:grid-cols-4">
         {INTERESTS.map((topic, i) => (
-          <RevealItem key={topic} className="group bg-bg-0 p-6">
+          <RevealItem key={topic} className="bg-bg-0 p-6">
             <p className="mono-label text-ink-35">{`0${i + 1}`}</p>
-            <p className="mt-6 font-display text-2xl font-medium text-ink transition-colors duration-300 group-hover:text-signal">
+            <p className="mt-6 font-display text-2xl font-medium text-ink">
               {topic}
             </p>
           </RevealItem>

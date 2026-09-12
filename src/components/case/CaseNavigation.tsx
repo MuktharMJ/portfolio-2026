@@ -49,14 +49,14 @@ function ProjectNavLink({
   return (
     <Link
       href={`/work/${project.slug}`}
-      className={`group relative block min-h-44 overflow-hidden p-6 transition-[background-color] duration-500 md:p-10 ${hue.wash} ${
+      className={`group project-row relative block min-h-44 overflow-hidden p-6 transition-[background-color] duration-500 md:p-10 ${hue.wash} ${
         bordered ? "border-t border-line sm:border-l sm:border-t-0" : ""
       }`}
     >
       {/* Hairline draw in the target project's hue */}
       <span
         aria-hidden="true"
-        className={`pointer-events-none absolute inset-x-0 top-0 h-px origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100 ${hue.bar}`}
+        className={`pointer-events-none absolute inset-x-0 top-0 h-px origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100 group-focus-visible:scale-x-100 ${hue.bar}`}
       />
       <div
         className={`flex h-full min-h-36 flex-col ${direction === "prev" ? "items-start" : "items-end text-right"}`}

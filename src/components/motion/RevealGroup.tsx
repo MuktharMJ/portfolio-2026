@@ -1,6 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
+
+import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { staggerContainer } from "@/lib/motion-tokens";
 
@@ -23,9 +25,9 @@ export default function RevealGroup({ children, className, as = "div" }: RevealG
     <Tag
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-80px" }}
+      viewport={{ once: true, margin: "0px 0px -32px 0px" }}
       variants={reduced ? { hidden: {}, visible: {} } : staggerContainer}
-      className={className}
+      className={`motion-reveal ${className ?? ""}`}
     >
       {children}
     </Tag>

@@ -1,7 +1,5 @@
 import SectionShell from "./SectionShell";
 import Reveal from "@/components/motion/Reveal";
-import RevealGroup from "@/components/motion/RevealGroup";
-import RevealItem from "@/components/motion/RevealItem";
 import { labItems } from "@/content/lab";
 import type { LabItem } from "@/content/types";
 
@@ -22,17 +20,17 @@ export default function TheLab() {
         </p>
       </Reveal>
 
-      <RevealGroup as="ul" className="mt-12 grid grid-cols-1 gap-x-12 sm:grid-cols-2">
-        {labItems.map((item, i) => (
-          <RevealItem as="li" key={item.slug} className="group border-b border-line py-8">
+      <ul className="mt-12 grid grid-cols-1 gap-x-12 sm:grid-cols-2">
+        {labItems.map((item) => (
+          <li key={item.slug} className={`border-b border-line ${item.status === "undocumented" ? "py-5" : "py-8"}`}>
             {item.status === "undocumented" ? (
-              <UndocumentedCell id={item.id} mirrored={i % 2 === 1} />
+              <UndocumentedCell id={item.id} />
             ) : (
               <DocumentedCell item={item} />
             )}
-          </RevealItem>
+          </li>
         ))}
-      </RevealGroup>
+      </ul>
 
       <Reveal delay={0.1}>
         <p className="mono-label mt-10">10+ BUILDS &mdash; MORE IN THE DRAWER</p>
@@ -42,17 +40,17 @@ export default function TheLab() {
 }
 
 /** Honest empty state: bench tag, reserved slot marker, status. */
-function UndocumentedCell({ id, mirrored }: { id: string; mirrored: boolean }) {
+function UndocumentedCell({ id }: { id: string }) {
   return (
     <>
-      <div className={`flex items-baseline justify-between gap-4 ${mirrored ? "sm:flex-row-reverse" : ""}`}>
+      <div className="flex items-baseline justify-between gap-4">
         <span className="mono-label text-ink-35">{id}</span>
         <span className="mono-label text-ink-35">UNDOCUMENTED</span>
       </div>
-      <div className={`mt-6 flex items-center gap-4 ${mirrored ? "sm:flex-row-reverse" : ""}`}>
+      <div className="mt-3 flex items-center gap-3">
         <span
           aria-hidden="true"
-          className="h-9 w-9 shrink-0 border border-line transition-colors duration-300 group-hover:border-signal"
+          className="h-1 w-1 shrink-0 bg-ink-35"
         />
         <p className="mono-label text-ink-60">Details coming soon.</p>
       </div>
