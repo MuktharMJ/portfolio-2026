@@ -1,19 +1,17 @@
 import Link from "next/link";
+import Arrow from "@/components/ui/Arrow";
 
 export default function NotFound() {
   return (
-    <main id="content" className="shell flex min-h-svh flex-col justify-center py-24">
-      <p className="mono-label text-signal">404 &mdash; SIGNAL LOST</p>
-      <h1 className="mt-6 font-display text-display-l font-medium text-ink">
-        This room doesn&apos;t exist.
+    <main id="content" className="shell not-found">
+      <p className="eyebrow">404 / Page not found</p>
+      <h1>
+        A wrong turn.
         <br />
-        <span className="text-ink-35">Yet.</span>
+        <i>A fresh start.</i>
       </h1>
-      <Link
-        href="/"
-        className="mono-label mt-10 inline-flex w-fit border border-line px-6 py-3 transition-colors hover:border-signal hover:text-signal"
-      >
-        BACK TO THE BENCH
+      <Link href="/#work" className="text-link">
+        Explore the work <Arrow direction="right" />
       </Link>
     </main>
   );

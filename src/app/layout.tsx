@@ -1,36 +1,40 @@
 import type { Metadata, Viewport } from "next";
-import { clash, instrumentSerif, inter, jetbrainsMono } from "@/lib/fonts";
+import { instrumentSerif, inter, jetbrainsMono } from "@/lib/fonts";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
+import { themeInitializationScript } from "@/lib/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Mukthar M J — Builder & Software Engineer",
+  title: "Mukthar M J — Software Engineering & Selected Work",
   description:
-    "Personal portfolio of Mukthar M J — software engineering student, full-stack developer, and AI tinkerer. A digital playground of projects and experiments.",
+    "Mukthar M J is a software engineering student building full-stack web products, thoughtful interfaces, and AI experiences. Explore CODEVERSE, Zenugo AI, Schedura, and GearPilot.",
 };
+export const viewport: Viewport = { themeColor: "#f4f2ec" };
 
-export const viewport: Viewport = {
-  themeColor: "#0a0a0e",
-};
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"
-      className={`${clash.variable} ${instrumentSerif.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
+      className={`${instrumentSerif.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="page-frame bg-bg-0 text-ink">
-        <a
-          href="#content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:bg-signal focus:px-4 focus:py-2 focus:font-mono focus:text-xs focus:text-bg-0"
-        >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: themeInitializationScript }}
+        />
+      </head>
+      <body>
+        <a href="#content" className="skip-link">
           Skip to content
         </a>
         <SiteHeader />
         {children}
         <SiteFooter />
-        <div aria-hidden="true" className="grain" />
       </body>
     </html>
   );

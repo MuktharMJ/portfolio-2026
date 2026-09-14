@@ -1,12 +1,6 @@
 import type { Project } from "./types";
 
-/**
- * Flagship projects. All narrative content is sourced from the creative
- * brief (knowledge.md §10–§14). Per the content rules (brief §26):
- * source URLs, media, metrics and unsupported statuses stay
- * undefined and render as designed pending states. Nothing is fabricated.
- * Live URLs and screenshots are user-provided (submission polish).
- */
+/** Existing, source-backed project narratives, screenshots, and destinations. */
 export const projects: Project[] = [
   {
     slug: "codeverse",
@@ -15,11 +9,15 @@ export const projects: Project[] = [
     tagline: "An interactive 3D universe for exploring the software ecosystem.",
     concept:
       "Technologies as stars/nodes in an explorable universe; relationships form connections users can search, inspect and expand.",
-    layoutVariant: "cosmic",
-    accent: "project-codeverse",
     stack: [
-      { category: "CORE", items: ["Next.js", "TypeScript", "React", "R3F", "Three.js"] },
-      { category: "DATA", items: ["PostgreSQL", "Neon", "GitHub API", "npm Registry API"] },
+      {
+        category: "CORE",
+        items: ["Next.js", "TypeScript", "React", "R3F", "Three.js"],
+      },
+      {
+        category: "DATA",
+        items: ["PostgreSQL", "Neon", "GitHub API", "npm Registry API"],
+      },
       { category: "OPS", items: ["Vercel", "Playwright"] },
     ],
     status: "SHIPPED — PRODUCTION DEPLOYMENT",
@@ -74,8 +72,14 @@ export const projects: Project[] = [
           ],
           specs: [
             { label: "RENDERING", text: "React Three Fiber · Three.js" },
-            { label: "APP LAYER", text: "Next.js · TypeScript · React · Tailwind CSS" },
-            { label: "CATALOG", text: "PostgreSQL on Neon — graph + metadata snapshots" },
+            {
+              label: "APP LAYER",
+              text: "Next.js · TypeScript · React · Tailwind CSS",
+            },
+            {
+              label: "CATALOG",
+              text: "PostgreSQL on Neon — graph + metadata snapshots",
+            },
             { label: "LIVE DATA", text: "GitHub API · npm Registry API" },
             { label: "DELIVERY", text: "Vercel — production deployment" },
             { label: "TESTING", text: "Playwright automated testing" },
@@ -93,8 +97,12 @@ export const projects: Project[] = [
       ],
     },
     links: { live: "https://code-verse-chi.vercel.app/", source: undefined },
-    media: [{ src: "/shots/codeverse.png", alt: "CODEVERSE — interactive 3D software universe interface" }],
-    metrics: undefined,
+    media: [
+      {
+        src: "/shots/codeverse.png",
+        alt: "CODEVERSE — interactive 3D software universe interface",
+      },
+    ],
   },
   {
     slug: "zenugo-ai",
@@ -103,11 +111,12 @@ export const projects: Project[] = [
     tagline: "AI-powered health and wellness platform.",
     concept:
       "AI-powered personalized conversations with JWT auth, persistent history, and OpenRouter integration on a Node/Express + MongoDB backend.",
-    layoutVariant: "calm",
-    accent: "project-zenugo",
     stack: [
       { category: "FRONTEND", items: ["React", "Vite"] },
-      { category: "BACKEND", items: ["Node.js", "Express.js", "MongoDB Atlas", "JWT", "OpenRouter"] },
+      {
+        category: "BACKEND",
+        items: ["Node.js", "Express.js", "MongoDB Atlas", "JWT", "OpenRouter"],
+      },
       { category: "OPS", items: ["Vercel", "Render"] },
     ],
     status: "SHIPPED — PRODUCTION DEPLOYMENT",
@@ -147,7 +156,10 @@ export const projects: Project[] = [
           specs: [
             { label: "CLIENT", text: "React · Vite" },
             { label: "API", text: "Node.js · Express.js" },
-            { label: "DATA", text: "MongoDB Atlas — users + conversation history" },
+            {
+              label: "DATA",
+              text: "MongoDB Atlas — users + conversation history",
+            },
             { label: "AUTH", text: "JWT authentication" },
             { label: "AI", text: "OpenRouter API integration" },
             { label: "DELIVERY", text: "Vercel · Render" },
@@ -165,8 +177,12 @@ export const projects: Project[] = [
       ],
     },
     links: { live: "https://zenugo-ai.vercel.app/", source: undefined },
-    media: [{ src: "/shots/zenugoai.png", alt: "Zenugo AI — AI-powered health and wellness conversation interface" }],
-    metrics: undefined,
+    media: [
+      {
+        src: "/shots/zenugoai.png",
+        alt: "Zenugo AI — AI-powered health and wellness conversation interface",
+      },
+    ],
   },
   {
     slug: "schedura",
@@ -175,11 +191,22 @@ export const projects: Project[] = [
     tagline: "Modern event management platform / SaaS product.",
     concept:
       "Event creation, publishing, attendee registration with QR-code tickets, check-in, dashboards and analytics — a real-world SaaS workflow.",
-    layoutVariant: "structured",
-    accent: "project-schedura",
     stack: [
-      { category: "FRONTEND", items: ["React 19", "TypeScript", "Tailwind CSS"] },
-      { category: "BACKEND", items: ["Node.js", "Express", "MongoDB Atlas", "JWT", "Cloudinary", "QR Code"] },
+      {
+        category: "FRONTEND",
+        items: ["React 19", "TypeScript", "Tailwind CSS"],
+      },
+      {
+        category: "BACKEND",
+        items: [
+          "Node.js",
+          "Express",
+          "MongoDB Atlas",
+          "JWT",
+          "Cloudinary",
+          "QR Code",
+        ],
+      },
     ],
     status: undefined,
     caseStudy: {
@@ -242,8 +269,12 @@ export const projects: Project[] = [
     },
     // Not deployed — no Live Demo link is shown (nothing fabricated).
     links: { live: undefined, source: undefined },
-    media: [{ src: "/shots/schedura.png", alt: "Schedura — event management dashboard with QR-code check-in" }],
-    metrics: undefined,
+    media: [
+      {
+        src: "/shots/schedura.png",
+        alt: "Schedura — event management dashboard with QR-code check-in",
+      },
+    ],
   },
   {
     slug: "gearpilot",
@@ -252,8 +283,6 @@ export const projects: Project[] = [
     tagline: "Laptop recommendation platform for the Indian market.",
     concept:
       "Recommendations, advanced filtering, search and comparison — a product-discovery experience built in TypeScript.",
-    layoutVariant: "data",
-    accent: "project-gearpilot",
     stack: [{ category: "FRONTEND", items: ["React", "TypeScript", "Vite"] }],
     status: undefined,
     caseStudy: {
@@ -304,7 +333,11 @@ export const projects: Project[] = [
       ],
     },
     links: { live: "https://gearpilot-v1.vercel.app/", source: undefined },
-    media: [{ src: "/shots/gearpilot.png", alt: "GearPilot — laptop recommendation and comparison interface" }],
-    metrics: undefined,
+    media: [
+      {
+        src: "/shots/gearpilot.png",
+        alt: "GearPilot — laptop recommendation and comparison interface",
+      },
+    ],
   },
 ];
