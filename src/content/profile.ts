@@ -26,7 +26,7 @@ export const socials: Social[] = [
 ];
 
 export const resume = {
-  education: "B.Tech CSE (Software Product Engineering)",
+  education: "B.Tech in Computer Science and Engineering — Software Product Engineering | CGPA 8.7/10",
   institution: "Alliance University",
   period: "July 2025 – May 2029",
   pdfHref: "/resume.pdf",
