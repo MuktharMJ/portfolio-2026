@@ -4,31 +4,31 @@ export const skillGroups: SkillGroup[] = [
   {
     id: "languages",
     title: "Languages",
-    skills: ["JavaScript", "TypeScript", "Python", "Java", "SQL"],
+    skills: ["JavaScript", "TypeScript", "Dart", "SQL", "HTML", "CSS"],
   },
   {
     id: "frontend-ui",
-    title: "Frontend & UI",
-    skills: ["React", "Next.js", "Vite", "Tailwind CSS", "Three.js", "Figma"],
+    title: "Frontend & Mobile",
+    skills: ["React", "Next.js", "Tailwind CSS", "React Query", "Three.js / R3F", "Flutter"],
   },
   {
     id: "backend-apis",
     title: "Backend & APIs",
-    skills: ["Node.js", "Express.js", "REST APIs", "JWT", "API Design"],
+    skills: ["Node.js", "Express.js", "REST APIs", "API integration", "Authentication"],
   },
   {
     id: "databases-data",
     title: "Databases & Data",
-    skills: ["PostgreSQL", "MongoDB", "Redis", "Firebase"],
+    skills: ["PostgreSQL", "MongoDB", "Firebase", "Cloud Firestore"],
   },
   {
     id: "ai-llm",
     title: "AI / LLM",
-    skills: ["OpenRouter", "Gemini", "Ollama"],
+    skills: ["OpenRouter", "Ollama"],
   },
   {
     id: "cloud-devops",
     title: "Cloud / DevOps",
-    skills: ["Vercel", "Render", "Docker", "GitHub Actions", "Cloudinary"],
+    skills: ["Vercel", "Render", "GitHub Actions", "Cloudinary"],
   },
 ];

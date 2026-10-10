@@ -8,7 +8,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Mukthar M J — Software Engineering & Selected Work",
   description:
-    "Mukthar M J is a software engineering student building full-stack web products, thoughtful interfaces, and AI experiences. Explore CODEVERSE, Zenugo AI, Schedura, and GearPilot.",
+    "Mukthar M J builds React, Next.js and TypeScript interfaces. Explore CODEVERSE, Zenugo AI, Schedura, DevMap, GearPilot and collaborative Flutter work on MachineTrack.",
 };
 export const viewport: Viewport = { themeColor: "#f4f2ec" };
 

@@ -4,13 +4,6 @@ import { projects } from "@/content/projects";
 import Arrow from "@/components/ui/Arrow";
 import Reveal from "@/components/motion/Reveal";
 
-const categories: Record<string, string> = {
-  codeverse: "Interactive 3D · Full-stack engineering",
-  "zenugo-ai": "Conversational AI · Full-stack product",
-  schedura: "Event management · SaaS",
-  gearpilot: "Product discovery · Frontend engineering",
-};
-
 // Match the editorial gallery's actual media widths, including the small GearPilot entry.
 const imageSizes: Record<string, string> = {
   codeverse:
@@ -20,6 +13,7 @@ const imageSizes: Record<string, string> = {
   schedura:
     "(max-width: 560px) 73vw, (max-width: 799px) 31vw, (max-width: 1552px) 32vw, 520px",
   gearpilot: "(max-width: 560px) 30vw, 252px",
+  devmap: "(max-width: 560px) 80vw, (max-width: 1000px) 40vw, 540px",
 };
 
 export default function FeaturedWork() {
@@ -28,7 +22,7 @@ export default function FeaturedWork() {
       <div className="section-heading">
         <h2 id="work-title">
           Selected <i>work</i>
-          <span className="work-count">(04)</span>
+          <span className="work-count">({String(projects.length).padStart(2, "0")})</span>
         </h2>
         <p className="eyebrow">A few ideas made real</p>
       </div>
@@ -39,7 +33,7 @@ export default function FeaturedWork() {
             className={`project project-${project.slug}`}
           >
             <article>
-              <Link
+              {project.media[0] && <Link
                 href={`/work/${project.slug}`}
                 className="project-media"
                 aria-label={`Explore ${project.name} case study`}
@@ -54,8 +48,8 @@ export default function FeaturedWork() {
                   <Image
                     src={project.media[0].src}
                     alt={project.media[0].alt}
-                    width={1920}
-                    height={1080}
+                    width={project.media[0].width ?? 1920}
+                    height={project.media[0].height ?? 1080}
                     sizes={imageSizes[project.slug]}
                     quality={90}
                     priority={i === 0}
@@ -64,10 +58,10 @@ export default function FeaturedWork() {
                 <span className="project-open">
                   View case study <Arrow />
                 </span>
-              </Link>
+              </Link>}
               <div className="project-caption">
                 <div>
-                  <p className="eyebrow">{categories[project.slug]}</p>
+                  <p className="eyebrow">{project.category}</p>
                   <h3>
                     <Link href={`/work/${project.slug}`}>
                       {project.name} <Arrow />
@@ -75,6 +69,12 @@ export default function FeaturedWork() {
                   </h3>
                 </div>
                 <p className="project-summary">{project.tagline}</p>
+                <p className="project-proof">{project.proof}</p>
+                <div className="project-destinations">
+                  <Link href={`/work/${project.slug}`}>Case study <Arrow /></Link>
+                  {project.links.live && <a href={project.links.live} target="_blank" rel="noopener noreferrer" aria-label={`${project.name} live application`}>Live <Arrow /></a>}
+                  {project.links.source && <a href={project.links.source} target="_blank" rel="noopener noreferrer" aria-label={`${project.name} source code`}>Source <Arrow /></a>}
+                </div>
               </div>
             </article>
           </Reveal>

@@ -43,6 +43,13 @@ export default function CaseConcept({
             ))}
           </dl>
         )}
+        {section.references && (
+          <ul className="case-references">
+            {section.references.map((reference) => (
+              <li key={reference.href}><a className="text-link" href={reference.href} target="_blank" rel="noopener noreferrer">{reference.label} <span aria-hidden="true">↗</span></a></li>
+            ))}
+          </ul>
+        )}
       </Reveal>
     </section>
   );

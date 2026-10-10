@@ -1,5 +1,6 @@
 import { skillGroups } from "@/content/skills";
 import Reveal from "@/components/motion/Reveal";
+import Link from "next/link";
 
 function SkillSymbol({ index }: { index: number }) {
   const paths = [
@@ -56,9 +57,9 @@ export default function Skills() {
           <br />
           behind the <i>things.</i>
         </h2>
-        <p>A considered toolkit for building across the stack.</p>
+        <p>A working toolkit, grounded in the projects above. Depth varies by tool; the case studies show how I use them.</p>
         <span className="skills-footnote">
-          From interface to infrastructure.
+          React & Next.js in CODEVERSE. React Query in Schedura. Flutter in MachineTrack.
         </span>
       </div>
       <div className="skill-list">
@@ -77,6 +78,16 @@ export default function Skills() {
             </div>
           </Reveal>
         ))}
+        <div className="capability-evidence">
+          <Link href="/work/codeverse">Next.js, TypeScript & Tailwind in practice ↗</Link>
+          <Link href="/work/schedura">React Query: caching & mutations ↗</Link>
+          <Link href="/work/machinetrack">Flutter integration & team contributions ↗</Link>
+        </div>
+        <details className="additional-tools">
+          <summary>Other experience & tools</summary>
+          <p>Also worked with or explored: Python, Java, Redis, Docker, Gemini API and Google AI Studio.</p>
+          <p>Development toolkit: Vite, Git, GitHub, VS Code, Postman and Figma; AI-assisted workflows with Antigravity IDE, Codex CLI and Claude Code.</p>
+        </details>
       </div>
     </section>
   );

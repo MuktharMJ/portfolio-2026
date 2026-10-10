@@ -25,8 +25,8 @@ export default function Hero() {
         </p>
         <div className="hero-description">
           <p>
-            I build web products, thoughtful interfaces, and experiences with
-            AI. From the first idea to the details that make it work.
+            I build web products with React, Next.js and TypeScript — from
+            thoughtful interfaces to the APIs and data behind them.
           </p>
           <a className="text-link" href="#work">
             Explore my work <Arrow direction="down" />

@@ -4,6 +4,7 @@ export interface Media {
   alt: string;
   width?: number;
   height?: number;
+  caption?: string;
 }
 
 export interface CaseStudySection {
@@ -14,12 +15,15 @@ export interface CaseStudySection {
   body?: string[];
   capabilities?: string[];
   specs?: { label: string; text: string }[];
+  references?: { label: string; href: string }[];
 }
 
 export interface Project {
   slug: string;
   index: string;
   name: string;
+  category: string;
+  proof: string;
   tagline: string;
   concept: string;
   stack: { category: string; items: string[] }[];

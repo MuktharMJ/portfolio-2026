@@ -52,7 +52,7 @@ export default function CaseHero({ project }: { project: Project }) {
           </div>
         ))}
       </dl>
-      <div className="case-media">
+      {project.media.length > 0 && <div className="case-media">
         {project.media.map((media, i) => (
           <figure key={media.src}>
             <Image
@@ -69,14 +69,14 @@ export default function CaseHero({ project }: { project: Project }) {
               priority={i === 0}
             />
             <figcaption>
-              <span>{project.name}</span>
+              <span>{media.caption ?? project.name}</span>
               <a href={media.src} target="_blank" rel="noopener noreferrer">
                 View full image <Arrow />
               </a>
             </figcaption>
           </figure>
         ))}
-      </div>
+      </div>}
     </header>
   );
 }

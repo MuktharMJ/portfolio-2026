@@ -693,6 +693,7 @@ Current CGPA:
 
 ---
 
+
 # 19. CONTACT
 
 End with a strong personal CTA.

@@ -554,9 +554,7 @@ i {
 }
 .project-caption {
   margin-top: 18px;
-  display: flex;
-  justify-content: space-between;
-  gap: 30px;
+  display: block;
 }
 .project-caption .eyebrow {
   font-size: 9px;
@@ -1048,10 +1046,11 @@ i {
 }
 .case-navigation > div {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: 64px;
 }
 .case-navigation a {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1574,7 +1573,7 @@ i {
     padding-block: 40px;
   }
   .case-navigation > div {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 34px;
   }
   .previous-project {
@@ -1585,8 +1584,10 @@ i {
     font-size: 20px;
   }
   .next-project > span:last-child {
-    font-size: 38px;
+    font-size: clamp(28px, 8.6vw, 38px);
+    gap: 16px;
   }
+  .next-project .arrow { width: 28px; height: 28px; flex-shrink: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1600,6 +1601,67 @@ i {
     opacity: 1;
     transform: none;
   }
+}
+/* Evidence stays secondary to the project name and media. */
+.project-proof {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+  margin-top: 10px;
+}
+.project-destinations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin-top: 8px;
+}
+.project-destinations a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  font-size: 12px;
+}
+.project-destinations .arrow { width: 13px; height: 13px; }
+.project-destinations a:hover,
+.capability-evidence a:hover { color: var(--accent); }
+.project-devmap {
+  grid-column: 1 / -1;
+  --project-bg: var(--zenugo-bg);
+  --project-text: var(--zenugo-text);
+}
+.project-devmap article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 48px;
+}
+.project-devmap .project-screen { aspect-ratio: 16 / 10; }
+.project-devmap .project-screen img { object-fit: cover; object-position: top; height: 100%; }
+.project-devmap .project-caption { margin: 0; }
+.project-devmap .project-summary { padding-top: 12px; }
+.project-machinetrack { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 28px; }
+.project-machinetrack .project-caption { margin-top: 0; }
+.project-machinetrack .project-caption h3 { font-size: 28px; }
+.project-machinetrack .project-summary { max-width: 560px; padding-top: 8px; }
+.project-machinetrack article { margin-left: auto; max-width: 900px; }
+.case-media figcaption { gap: 24px; line-height: 1.6; }
+.case-media figcaption span { max-width: 70%; }
+.case-media figcaption a { flex-shrink: 0; }
+.case-references { list-style: none; padding: 0; margin: 30px 0 0; }
+.case-references li + li { margin-top: 12px; }
+.capability-evidence { display: grid; gap: 4px; margin-top: 24px; }
+.capability-evidence a { font-size: 13px; line-height: 1.6; padding-block: 12px; }
+.additional-tools { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 12px; }
+.additional-tools summary { cursor: pointer; padding-block: 14px; font-size: 13px; }
+.additional-tools p { font-size: 13px; line-height: 1.8; color: var(--muted); margin: 12px 0; }
+@media (max-width: 560px) {
+  .project-devmap article { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .project-gearpilot article { grid-template-columns: minmax(0, 110px) minmax(0, 1fr); align-items: start; }
+  .project-gearpilot .project-destinations { gap: 0 14px; }
+  .project-gearpilot .project-proof { font-size: 10px; }
+  .case-media figcaption { flex-direction: column; gap: 12px; }
+  .case-media figcaption span { max-width: 100%; }
 }
 @media print {
   .site-header,
